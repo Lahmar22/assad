@@ -38,9 +38,14 @@
             </div>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
-        
+            <button data-modal-target="addAnimal" data-modal-toggle="addAnimal" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center" type="button">
+                Créer Visite Guidée
+            </button>
+            <button data-modal-target="addAnimal" data-modal-toggle="addAnimal" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center" type="button">
+                Ajout visite
+            </button>
 
-            
+
         </nav>
 
         <div class="p-4 border-t border-gray-700">
