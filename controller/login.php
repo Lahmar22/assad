@@ -1,53 +1,59 @@
 <?php
-    session_start(); 
+session_start();
 
-    require "connexion.php";
+require "connexion.php";
 
-    if(isset($_POST["email"]) && isset($_POST["password"])){
-        
-        $email = $_POST["email"];
-        $password = $_POST["password"];
+if (isset($_POST["email"]) && isset($_POST["password"])) {
 
-        
-        $stmt = $conn->prepare("SELECT id_user, email, password FROM utilisateur WHERE email = ?");
-        
-        if ($stmt) {
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    $email = $_POST["email"];
+    $password = $_POST["password"];
 
-            
-            if ($result->num_rows === 1) {
-                $user = $result->fetch_assoc();
 
-                if (password_verify($password, $user['password'])) {
-                    
-                    
+    $stmt = $conn->prepare("SELECT id_user, email, password, role FROM utilisateur WHERE email = ?");
+
+    if ($stmt) {
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+
+            if (password_verify($password, $user['password'])) {
+
+                if ($user['role'] == "visiteur") {
                     $_SESSION['user_id'] = $user['id_user'];
                     $_SESSION['email'] = $user['email'];
-                    
-                    header("Location: ../visiteur/home.php");
-                    exit(); 
-                    
-                }else {
-                    
-                    header("Location: ../login.php?error=Invalid password");
-                    exit();
-                }
 
+                    header("Location: ../visiteur/home.php");
+                    exit();
+                }else if($user['role'] == "guid"){
+                    $_SESSION['user_id'] = $user['id_user'];
+                    $_SESSION['email'] = $user['email'];
+
+                    header("Location: ../guid/home.php");
+                    exit();
+
+                }
             } else {
-                
-                header("Location: ../login.php?error=User not found");
+
+                header("Location: ../login.php?error=Invalid password");
                 exit();
             }
-            $stmt->close();
         } else {
-            
-            echo "Error preparing statement: " . $conn->error;
-        }
 
+            header("Location: ../login.php?error=User not found");
+            exit();
+        }
+        $stmt->close();
     } else {
-        header("Location: ../login.php");
-        exit();
+
+        echo "Error preparing statement: " . $conn->error;
     }
+} else {
+    header("Location: ../login.php");
+    exit();
+}
+
 ?>
