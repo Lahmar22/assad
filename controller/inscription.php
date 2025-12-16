@@ -8,7 +8,10 @@
     $password= $_POST["password"];
     $role= $_POST["role"];
 
-    $sql = "INSERT INTO utilisateur(nom, prenom, email, password, role) VALUES ('$nom', '$prenom', '$email', '$password', '$role')";
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+
+    $sql = "INSERT INTO utilisateur(nom, prenom, email, password, role) VALUES ('$nom', '$prenom', '$email', '$hash', '$role')";
 
     if($conn->query($sql)=== true){
         header("location: ../index.php");
