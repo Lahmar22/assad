@@ -5,6 +5,12 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+require "../controller/connexion.php";
+
+$sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
+
+$resultAnimal = $conn->query($sqlAnimal);
 ?>
 
 <!DOCTYPE html>
@@ -60,8 +66,24 @@ if (!isset($_SESSION['user_id'])) {
 
 
     <main class="pt-24 lg:ml-64 p-4 lg:p-8">
-        <div>
-            <h1>Bonjour Mr : zaki</h1>
+       <div class="bg-white shadow-md rounded-lg p-6 mb-6 flex items-center gap-4">
+            <!-- Avatar -->
+            <div class="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center text-xl font-bold">
+                <?= strtoupper(substr($_SESSION['nom'], 0, 1)) . strtoupper(substr($_SESSION['prenom'], 0, 1))  ?>
+            </div>
+
+            <!-- Texte -->
+            <div>
+                <h1 class="text-xl font-semibold text-gray-800">
+                    Bonjour, Mr
+                    <span class="text-green-600">
+                        <?= $_SESSION['nom'] ?> <?= $_SESSION['prenom'] ?>
+                    </span>
+                </h1>
+                <p class="text-sm text-gray-500">
+                    Bienvenue sur votre espace ASSAD
+                </p>
+            </div>
         </div>
 
 
@@ -142,40 +164,22 @@ if (!isset($_SESSION['user_id'])) {
 
 
         <section>
+             <h1 class="text-3xl font-bold mb-6">Les Animaux</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+               
 
-                <?php
-                $data = ($result2 && $result2->num_rows > 0) ? $result2 : $result;
-
-                while ($row = $data->fetch_assoc()) :
-                ?>
+                <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
                     <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition">
                         <img src="<?= $row['image'] ?>" class="w-full h-48 object-cover">
                         <div class="p-6">
-                            <h3 class="text-xl font-bold"><?= $row['nom'] ?></h3>
-                            <p class="text-gray-600">Type : <?= $row['type_alimentaire'] ?></p>
-                            <p class="text-gray-600">Habitat : <?= $row['nomHab'] ?></p>
+                            <h3 class="text-xl font-bold"><?= $row['nomAnimal'] ?></h3>
+                            <p class="text-gray-600">Espèce : <?= $row['espèce'] ?></p>
+                            <p class="text-gray-600">Habitat : <?= $row['nomHabitat'] ?></p>
 
-                            <div class="flex gap-3 mt-4">
-                                <form action="delete.php" method="POST">
-                                    <input type="hidden" name="id_animal" value="<?= $row['id_animal'] ?>">
-                                    <button class="bg-red-600 text-white px-4 py-2 rounded">DELETE</button>
-                                </form>
-
-                                <button
-                                    class="bg-blue-600 text-white px-4 py-2 rounded"
-                                    onclick="openUpdateModal(this)"
-                                    data-id-animal="<?= $row['id_animal'] ?>"
-                                    data-nom="<?= $row['nom'] ?>"
-                                    data-image="<?= $row['image'] ?>"
-                                    data-type-alimentaire="<?= $row['type_alimentaire'] ?>"
-                                    data-id-habitat="<?= $row['id_habitat'] ?>">
-                                    UPDATE
-                                </button>
-                            </div>
+                            
                         </div>
                     </div>
-                <?php endwhile; ?>
+                <?php } ?>
 
             </div>
         </section>
