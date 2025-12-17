@@ -1,5 +1,12 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION['id_admin'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
 require "../controller/connexion.php";
 
 $sql = "SELECT id_user, nom, prenom, email, role, statuse FROM utilisateur ";
@@ -54,7 +61,7 @@ $result = $conn->query($sql);
         </nav>
 
         <div class="p-4 border-t border-gray-700">
-            <a href="logout.php"
+            <a href="../controller/logout.php"
                 class="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition">
                 🚪 <span>Déconnexion</span>
             </a>
