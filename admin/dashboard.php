@@ -311,9 +311,9 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
 
                                 <td class="px-6 py-4 text-center">
-                                    <form action="../controller/delete.php" method="POST"
-                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
-                                        <input type="hidden" name="id" value="<?= $row["id_user"] ?>">
+                                    <form action="../controller/deleteAnimal.php" method="POST"
+                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet Animal ?');">
+                                        <input type="hidden" name="id" value="<?= $row["id"] ?>">
                                         <button
                                             type="submit"
                                             class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
