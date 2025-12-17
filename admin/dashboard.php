@@ -17,7 +17,7 @@ $sqlHabitat = "SELECT * FROM habitats ";
 $resultHbitat = $conn->query($sqlHabitat);
 $resultHbitat2 = $conn->query($sqlHabitat);
 
-$sqlAnimal = "SELECT animaux.id, animaux.nom, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nom FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
+$sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
 
 $resultAnimal = $conn->query($sqlAnimal);
 
@@ -238,7 +238,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["description"] ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["zonezoo"] ?></td>
 
-                                
+
                                 <td class="px-6 py-4 text-center">
                                     <form action="../controller/deleteHabitat.php" method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
@@ -279,36 +279,21 @@ $resultAnimal = $conn->query($sqlAnimal);
 
                     <!-- Table Body -->
                     <tbody class="divide-y divide-gray-200">
-                        <?php while ($row = $result->fetch_assoc()) { ?>
+                        <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id_user"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nom"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["prenom"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["email"] ?></td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                <?= $row["role"] === 'admin' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' ?>">
-                                        <?= $row["role"] ?>
-                                    </span>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomAnimal"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["espèce"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["alimentation"] ?></td>
+                                <td class="px-6 py-4 w-25">
+                                    <img src="<?= $row["image"] ?>"
+                                        alt="<?= $row["nomAnimal"] ?>"
+                                        class="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm">
                                 </td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["paysorigine"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["descriptioncourte"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
 
-                                <td class="px-6 py-4 text-sm text-gray-700">
-                                    <form action="../controller/update_status.php" method="POST">
-                                        <input type="hidden" name="id_user" value="<?= $row['id_user'] ?>">
-
-                                        <select name="statuse"
-                                            onchange="this.form.submit()"
-                                            class="px-3 py-1 rounded-md text-sm font-medium <?= $row['statuse'] === 'Activer' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
-
-                                            <option value="Activer" <?= $row['statuse'] === 'Activer' ? 'selected' : '' ?>>
-                                                Activer
-                                            </option>
-                                            <option value="Désactiver" <?= $row['statuse'] === 'Désactiver' ? 'selected' : '' ?>>
-                                                Désactiver
-                                            </option>
-                                        </select>
-                                    </form>
-                                </td>
                                 <td class="px-6 py-4 text-center">
                                     <form action="../controller/delete.php" method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
@@ -422,7 +407,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                             <label for="descriptioncourte" class="block mb-2.5 text-sm font-medium text-heading">Description Courte</label>
                             <input type="text" name="descriptioncourte" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
                         </div>
-                        
+
                         <div>
                             <label for="habitat" class="block text-sm font-medium text-gray-700 mb-2">Habitat</label>
                             <select
@@ -432,8 +417,8 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 <?php while ($row = $resultHbitat2->fetch_assoc()) { ?>
                                     <option value="<?= $row['id_habitat'] ?>"><?= $row['nom'] ?></option>
                                 <?php } ?>
-                                
-                                
+
+
                             </select>
                         </div>
                     </div>
