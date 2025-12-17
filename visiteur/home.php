@@ -57,7 +57,7 @@ $resultAnimal = $conn->query($sqlAnimal);
         </nav>
 
         <div class="p-4 border-t border-gray-700">
-            <a href="logout.php"
+            <a href="../controller/logout.php"
                 class="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition">
                 🚪 <span>Déconnexion</span>
             </a>
@@ -154,10 +154,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                     <p class="mt-2">💰 <b>120 MAD</b></p>
                     <p class="text-sm text-gray-500 mt-1">📅 20/12/2025 • 18:00</p>
 
-                    <div class="flex justify-between mt-6">
-                        <button class="bg-yellow-500 text-white px-4 py-2 rounded">Modifier</button>
-                        <button class="bg-red-600 text-white px-4 py-2 rounded">Annuler</button>
-                    </div>
+                    
                 </div>
             </div>
         </section>
@@ -166,11 +163,10 @@ $resultAnimal = $conn->query($sqlAnimal);
         <section>
              <h1 class="text-3xl font-bold mb-6">Les Animaux</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-               
-
+            
                 <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
                     <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition">
-                        <img src="<?= $row['image'] ?>" class="w-full h-48 object-cover">
+                        <img src="<?= $row['image'] ?>" class="w-full h-48 object-cover rounded-lg">
                         <div class="p-6">
                             <h3 class="text-xl font-bold"><?= $row['nomAnimal'] ?></h3>
                             <p class="text-gray-600">Espèce : <?= $row['espèce'] ?></p>
