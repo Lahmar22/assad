@@ -257,7 +257,7 @@ $resultAnimal = $conn->query($sqlAnimal);
 
                                 <td class="px-6 py-4 text-center">
                                     <form action="../controller/deleteHabitat.php" method="POST"
-                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet habitat ?');">
                                         <input type="hidden" name="id" value="<?= $row["id_habitat"] ?>">
                                         <button
                                             type="submit"
