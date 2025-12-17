@@ -1,3 +1,12 @@
+<?php 
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -36,7 +45,7 @@
         </p>
 
         <div class="flex justify-center gap-4">
-            <a href="logout.php"
+            <a href="controller/logout.php"
                class="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
                 Déconnexion
             </a>
