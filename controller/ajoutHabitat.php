@@ -6,7 +6,7 @@ $typeclimat = $_POST["typeclimat"];
 $description = $_POST["description"];
 $zonezoo = $_POST["zonezoo"];
 
-$sql = "INSERT INTO habitats(nom, typeclimat, description, zonezoo) VALUES('$nom', '$typeclimat', '$description', '$zonezoo')";
+$sql = "INSERT INTO habitats(nomHabitat, typeclimat, description, zonezoo) VALUES('$nom', '$typeclimat', '$description', '$zonezoo')";
 
 if($conn->query($sql)=== true){
     header("location: ../admin/dashboard.php");
