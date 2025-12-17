@@ -249,7 +249,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                         <?php while ($row = $resultHbitat->fetch_assoc()) { ?>
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id_habitat"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nom"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["typeclimat"] ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["description"] ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["zonezoo"] ?></td>
