@@ -71,7 +71,7 @@ $result = $conn->query($sql);
 
     <main class="pt-24 lg:ml-64 p-4 lg:p-8">
         <div>
-            <h1>Bonjour Mr : zaki</h1>
+            <h1>Bonjour Mr : <?= $_SESSION['nom'] ?>  <?= $_SESSION['prenom'] ?></h1>
         </div>
 
 
