@@ -30,7 +30,7 @@ if ($resAdmin->num_rows === 1) {
 
 $stmtAdmin->close();
 
-$stmtUser = $conn->prepare("SELECT id_user, email, password, role FROM utilisateur WHERE email = ?");
+$stmtUser = $conn->prepare("SELECT id_user, email, password, role, statuse FROM utilisateur WHERE email = ?");
 $stmtUser->bind_param("s", $email);
 $stmtUser->execute();
 $resUser = $stmtUser->get_result();
@@ -44,9 +44,17 @@ if ($resUser->num_rows === 1) {
         $_SESSION['role'] = $user['role'];
 
         if ($user['role'] === 'visiteur') {
-            header("Location: ../visiteur/home.php");
+            if($user['statuse'] === 'Désactiver'){
+                header("Location: ../pageAttente.php ");
+            }else{
+                header("Location: ../visiteur/home.php ");
+            }
         } elseif ($user['role'] === 'guid') {
-            header("Location: ../guid/home.php");
+            if($user['statuse'] === 'Désactiver'){
+                header("Location: ../pageAttente.php ");
+            }else{
+                header("Location: ../guid/home.php ");
+            }
         } else {
             header("Location: ../login.php?error=Unknown role");
         }
