@@ -81,8 +81,24 @@ $resultAnimal = $conn->query($sqlAnimal);
 
 
     <main class="pt-24 lg:ml-64 p-4 lg:p-8">
-        <div>
-            <h1>Bonjour Mr : <?= $_SESSION['nom'] ?> <?= $_SESSION['prenom'] ?></h1>
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6 flex items-center gap-4">
+            <!-- Avatar -->
+            <div class="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center text-xl font-bold">
+                <?= strtoupper(substr($_SESSION['nom'], 0, 1)) . strtoupper(substr($_SESSION['prenom'], 0, 1))  ?>
+            </div>
+
+            <!-- Texte -->
+            <div>
+                <h1 class="text-xl font-semibold text-gray-800">
+                    Bonjour, Mr
+                    <span class="text-green-600">
+                        <?= $_SESSION['nom'] ?> <?= $_SESSION['prenom'] ?>
+                    </span>
+                </h1>
+                <p class="text-sm text-gray-500">
+                    Bienvenue sur votre espace ASSAD
+                </p>
+            </div>
         </div>
 
 
