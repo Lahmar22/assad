@@ -2,7 +2,7 @@
 
 require "../controller/connexion.php";
 
-$sql = "SELECT id_user, nom, prenom, email, role FROM utilisateur ";
+$sql = "SELECT id_user, nom, prenom, email, role, statuse FROM utilisateur ";
 $result = $conn->query($sql);
 
 ?>
@@ -138,6 +138,7 @@ $result = $conn->query($sql);
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Prenom</th>
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
                             <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
                         </tr>
                     </thead>
@@ -157,6 +158,23 @@ $result = $conn->query($sql);
                                     </span>
                                 </td>
 
+                                <td class="px-6 py-4 text-sm text-gray-700">
+                                    <form action="../controller/update_status.php" method="POST">
+                                        <input type="hidden" name="id_user" value="<?= $row['id_user'] ?>">
+
+                                        <select name="statuse"
+                                            onchange="this.form.submit()"
+                                            class="px-3 py-1 rounded-md text-sm font-medium <?= $row['statuse'] === 'Activer'? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+
+                                            <option value="Activer" <?= $row['statuse'] === 'Activer' ? 'selected' : '' ?>>
+                                                Activer
+                                            </option>
+                                            <option value="Désactiver" <?= $row['statuse'] === 'Désactiver' ? 'selected' : '' ?>>
+                                                Désactiver
+                                            </option>
+                                        </select>
+                                    </form>
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     <form action="../controller/delete.php" method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
