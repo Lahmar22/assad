@@ -12,6 +12,17 @@ require "../controller/connexion.php";
 $sql = "SELECT id_user, nom, prenom, email, role, statuse FROM utilisateur ";
 $result = $conn->query($sql);
 
+$sqlHabitat = "SELECT * FROM habitats ";
+
+$resultHbitat = $conn->query($sqlHabitat);
+$resultHbitat2 = $conn->query($sqlHabitat);
+
+$sqlAnimal = "SELECT animaux.id, animaux.nom, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nom FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
+
+$resultAnimal = $conn->query($sqlAnimal);
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -50,10 +61,10 @@ $result = $conn->query($sql);
             </div>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
-            <button type="button" onclick="openModal()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
+            <button type="button" onclick="openModalAnimal()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
                 Ajouter Animal
             </button>
-            <button data-modal-target="addHbitat" data-modal-toggle="addHbitat" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center" type="button">
+            <button type="button" onclick="openModalHabitat()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
                 Ajout Habitat
             </button>
 
@@ -71,7 +82,7 @@ $result = $conn->query($sql);
 
     <main class="pt-24 lg:ml-64 p-4 lg:p-8">
         <div>
-            <h1>Bonjour Mr : <?= $_SESSION['nom'] ?>  <?= $_SESSION['prenom'] ?></h1>
+            <h1>Bonjour Mr : <?= $_SESSION['nom'] ?> <?= $_SESSION['prenom'] ?></h1>
         </div>
 
 
@@ -171,7 +182,7 @@ $result = $conn->query($sql);
 
                                         <select name="statuse"
                                             onchange="this.form.submit()"
-                                            class="px-3 py-1 rounded-md text-sm font-medium <?= $row['statuse'] === 'Activer'? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+                                            class="px-3 py-1 rounded-md text-sm font-medium <?= $row['statuse'] === 'Activer' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
 
                                             <option value="Activer" <?= $row['statuse'] === 'Activer' ? 'selected' : '' ?>>
                                                 Activer
@@ -198,39 +209,203 @@ $result = $conn->query($sql);
                     </tbody>
                 </table>
             </div>
+
+        </section>
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Les Habitats</h2>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+                <table class="min-w-full border border-gray-200">
+                    <!-- Table Head -->
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Id</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nom</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type Climat</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Zone zoo</th>
+                            <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table Body -->
+                    <tbody class="divide-y divide-gray-200">
+                        <?php while ($row = $resultHbitat->fetch_assoc()) { ?>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id_habitat"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nom"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["typeclimat"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["description"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["zonezoo"] ?></td>
+
+                                
+                                <td class="px-6 py-4 text-center">
+                                    <form action="../controller/deleteHabitat.php" method="POST"
+                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                        <input type="hidden" name="id" value="<?= $row["id_habitat"] ?>">
+                                        <button
+                                            type="submit"
+                                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Les Animaux</h2>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+                <table class="min-w-full border border-gray-200">
+                    <!-- Table Head -->
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Id</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nom</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Espèce</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Alimentation</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Image</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pays Origine</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description Courte</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Habitat</th>
+                            <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table Body -->
+                    <tbody class="divide-y divide-gray-200">
+                        <?php while ($row = $result->fetch_assoc()) { ?>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id_user"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nom"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["prenom"] ?></td>
+                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["email"] ?></td>
+                                <td class="px-6 py-4 text-sm">
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                <?= $row["role"] === 'admin' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' ?>">
+                                        <?= $row["role"] ?>
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 text-sm text-gray-700">
+                                    <form action="../controller/update_status.php" method="POST">
+                                        <input type="hidden" name="id_user" value="<?= $row['id_user'] ?>">
+
+                                        <select name="statuse"
+                                            onchange="this.form.submit()"
+                                            class="px-3 py-1 rounded-md text-sm font-medium <?= $row['statuse'] === 'Activer' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+
+                                            <option value="Activer" <?= $row['statuse'] === 'Activer' ? 'selected' : '' ?>>
+                                                Activer
+                                            </option>
+                                            <option value="Désactiver" <?= $row['statuse'] === 'Désactiver' ? 'selected' : '' ?>>
+                                                Désactiver
+                                            </option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <form action="../controller/delete.php" method="POST"
+                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');">
+                                        <input type="hidden" name="id" value="<?= $row["id_user"] ?>">
+                                        <button
+                                            type="submit"
+                                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
         </section>
 
 
 
     </main>
 
-    <div id="addAnimal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="addHabitat" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
                 <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
-                    <button type="button" onclick="closeModal()" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="addAnimal">
+                    <button type="button" onclick="closeModalHabitat()" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="addAnimal">
                         <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
                         </svg>
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <form action="ajouter.php" method="POST">
+                <form action="../controller/ajoutHabitat.php" method="POST">
                     <div class="space-y-4">
                         <div class="col-span-2">
-                            <label for="name" class="block mb-2.5 text-sm font-medium text-heading">Name</label>
-                            <input type="text" name="name" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                            <label for="nomhabitat" class="block mb-2.5 text-sm font-medium text-heading">Nom Habitat</label>
+                            <input type="text" name="nomhabitat" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
                         </div>
                         <div>
-                            <label for="type_alimentaire" class="block text-sm font-medium text-gray-700 mb-2">Type Alimentaire</label>
-                            <select
-                                name="type_alimentaire"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="">Select type alimentaire</option>
-                                <option value="carnivore">🥩 Carnivore</option>
-                                <option value="herbivore">🥦 Herbivore</option>
-                                <option value="omnivore">🥘 Omnivore</option>
-                            </select>
+                            <label for="typeclimat" class="block text-sm font-medium text-gray-700 mb-2">Type Climat</label>
+                            <input type="text" name="typeclimat" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+
+                        </div>
+                        <div class="col-span-2">
+                            <label for="description" class="block mb-2 text-sm font-medium text-gray-700">
+                                Description
+                            </label>
+                            <textarea id="product-description" name="description" rows="3"
+                                class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                placeholder="Entrez la description ici..." required></textarea>
+                        </div>
+                        <div>
+                            <label for="zonezoo" class="block text-sm font-medium text-gray-700 mb-2">zone zoo</label>
+                            <input type="text" name="zonezoo" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
+                        <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+                            <svg class="w-4 h-4 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+                            </svg>
+                            Ajout Habitat
+                        </button>
+                        <button data-modal-hide="addAnimal" type="button" onclick="closeModalHabitat()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addAnimal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <div class="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
+                <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+                    <button type="button" onclick="closeModalAnimal()" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="addAnimal">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <form action="../controller/ajoutAnimal.php" method="POST">
+                    <div class="space-y-4">
+                        <div class="col-span-2">
+                            <label for="nom" class="block mb-2.5 text-sm font-medium text-heading">Nom</label>
+                            <input type="text" name="nom" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="espece" class="block mb-2.5 text-sm font-medium text-heading">Espèce</label>
+                            <input type="text" name="espece" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="alimentation" class="block mb-2.5 text-sm font-medium text-heading">Alimentation</label>
+                            <input type="text" name="alimentation" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
                         </div>
                         <div class="col-span-2">
                             <label for="image" class="block mb-2.5 text-sm font-medium text-heading">Image</label>
@@ -239,16 +414,26 @@ $result = $conn->query($sql);
                                 name="image"
                                 class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
                         </div>
+                        <div class="col-span-2">
+                            <label for="paysorigine" class="block mb-2.5 text-sm font-medium text-heading">Pays Origine</label>
+                            <input type="text" name="paysorigine" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="descriptioncourte" class="block mb-2.5 text-sm font-medium text-heading">Description Courte</label>
+                            <input type="text" name="descriptioncourte" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        
                         <div>
                             <label for="habitat" class="block text-sm font-medium text-gray-700 mb-2">Habitat</label>
                             <select
                                 name="habitat"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="">Select a habitat</option>
-                                <option value="1">🪾 Savane</option>
-                                <option value="2">🌳 Jungle</option>
-                                <option value="3">🏜️ Désert</option>
-                                <option value="4">🌊 Océan</option>
+                                <?php while ($row = $resultHbitat2->fetch_assoc()) { ?>
+                                    <option value="<?= $row['id_habitat'] ?>"><?= $row['nom'] ?></option>
+                                <?php } ?>
+                                
+                                
                             </select>
                         </div>
                     </div>
@@ -257,9 +442,9 @@ $result = $conn->query($sql);
                             <svg class="w-4 h-4 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
                             </svg>
-                            Add new Animal
+                            Ajout Animal
                         </button>
-                        <button data-modal-hide="addAnimal" type="button" onclick="closeModal()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+                        <button data-modal-hide="addAnimal" type="button" onclick="closeModalAnimal()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -267,14 +452,30 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-        function openModal() {
+        function openModalAnimal() {
             document.getElementById("addAnimal").classList.remove("hidden");
             document.getElementById("addAnimal").classList.add("block");
+
+
         }
 
-        function closeModal() {
+        function closeModalAnimal() {
             document.getElementById("addAnimal").classList.remove("block");
             document.getElementById("addAnimal").classList.add("hidden");
+
+
+        }
+
+        function openModalHabitat() {
+            document.getElementById("addHabitat").classList.remove("hidden");
+            document.getElementById("addHabitat").classList.add("block");
+
+        }
+
+        function closeModalHabitat() {
+            document.getElementById("addHabitat").classList.remove("block");
+            document.getElementById("addHabitat").classList.add("hidden");
+
         }
     </script>
 </body>
