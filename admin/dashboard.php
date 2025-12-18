@@ -16,8 +16,9 @@ $sqlHabitat = "SELECT * FROM habitats ";
 
 $resultHbitat = $conn->query($sqlHabitat);
 $resultHbitat2 = $conn->query($sqlHabitat);
+$resultHbitat3 = $conn->query($sqlHabitat);
 
-$sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
+$sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, animaux.id_habitat, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
 
 $resultAnimal = $conn->query($sqlAnimal);
 
@@ -255,7 +256,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["zonezoo"] ?></td>
 
 
-                                <td class="px-6 py-4 text-center">
+                                <td class="flex gap-3 px-6 py-4 text-center">
                                     <form action="../controller/deleteHabitat.php" method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer cet habitat ?');">
                                         <input type="hidden" name="id" value="<?= $row["id_habitat"] ?>">
@@ -265,6 +266,13 @@ $resultAnimal = $conn->query($sqlAnimal);
                                             Supprimer
                                         </button>
                                     </form>
+                                    <button
+                                        type="button"
+
+                                        class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                        Modifier
+                                    </button>
+
                                 </td>
                             </tr>
                         <?php } ?>
@@ -310,7 +318,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["descriptioncourte"] ?></td>
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
 
-                                <td class="px-6 py-4 text-center">
+                                <td class="flex gap-3 px-6 py-4 text-center">
                                     <form action="../controller/deleteAnimal.php" method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer cet Animal ?');">
                                         <input type="hidden" name="id" value="<?= $row["id"] ?>">
@@ -320,6 +328,21 @@ $resultAnimal = $conn->query($sqlAnimal);
                                             Supprimer
                                         </button>
                                     </form>
+
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+                                        type="button"
+                                        onclick="openModalAnimalModify(this)"
+                                        data-id="<?= $row['id'] ?>"
+                                        data-nom-animal="<?= $row['nomAnimal'] ?>"
+                                        data-espece="<?= $row['espèce'] ?>"
+                                        data-alimentation="<?= $row['alimentation'] ?>"
+                                        data-image="<?= $row['image'] ?>"
+                                        data-paysorigine="<?= $row['paysorigine'] ?>"
+                                        data-descriptioncourte="<?= $row['descriptioncourte'] ?>"
+                                        data-id-habitat="<?= $row['id_habitat'] ?>">
+                                        UPDATE
+                                    </button>
+
                                 </td>
                             </tr>
                         <?php } ?>
@@ -431,7 +454,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="">Select a habitat</option>
                                 <?php while ($row = $resultHbitat2->fetch_assoc()) { ?>
-                                    <option value="<?= $row['id_habitat'] ?>"><?= $row['nom'] ?></option>
+                                    <option value="<?= $row['id_habitat'] ?>"><?= $row['nomHabitat'] ?></option>
                                 <?php } ?>
 
 
@@ -446,6 +469,79 @@ $resultAnimal = $conn->query($sqlAnimal);
                             Ajout Animal
                         </button>
                         <button data-modal-hide="addAnimal" type="button" onclick="closeModalAnimal()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="updateAnimal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <div class="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
+                <h1>Modifier Animal</h1>
+                <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+                    <button type="button" onclick="closeModalAnimalModify()" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="addAnimal">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <form action="../controller/modifierAnimal.php" method="POST">
+                    <div class="space-y-4">
+                        <input id="idAnimal" type="hidden" name="id">
+                        <div class="col-span-2">
+                            <label for="nom" class="block mb-2.5 text-sm font-medium text-heading">Nom</label>
+                            <input id="nomAnimal" type="text" name="nom" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="espece" class="block mb-2.5 text-sm font-medium text-heading">Espèce</label>
+                            <input id="espaceAnimal" type="text" name="espece" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="alimentation" class="block mb-2.5 text-sm font-medium text-heading">Alimentation</label>
+                            <input id="AlimentationAnimal" type="text" name="alimentation" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="image" class="block mb-2.5 text-sm font-medium text-heading">Image</label>
+                            <input
+                                id="imageAnimal"
+                                type="text"
+                                name="image"
+                                class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="paysorigine" class="block mb-2.5 text-sm font-medium text-heading">Pays Origine</label>
+                            <input id="paysorigineAnimal" type="text" name="paysorigine" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="descriptioncourte" class="block mb-2.5 text-sm font-medium text-heading">Description Courte</label>
+                            <input id="descriptioncourteAnimal" type="text" name="descriptioncourte" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+
+                        <div>
+                            <label for="habitat" class="block text-sm font-medium text-gray-700 mb-2">Habitat</label>
+                            <select
+                                name="habitat"
+                                id="habitatAnimal"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select a habitat</option>
+                                <?php while ($row = $resultHbitat3->fetch_assoc()) { ?>
+                                    <option value="<?= $row['id_habitat'] ?>"><?= $row['nomHabitat'] ?></option>
+                                <?php } ?>
+
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
+                        <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+                            <svg class="w-4 h-4 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+                            </svg>
+                            Modifier Animal
+                        </button>
+                        <button data-modal-hide="addAnimal" type="button" onclick="closeModalAnimalModify()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -476,6 +572,32 @@ $resultAnimal = $conn->query($sqlAnimal);
         function closeModalHabitat() {
             document.getElementById("addHabitat").classList.remove("block");
             document.getElementById("addHabitat").classList.add("hidden");
+
+        }
+
+        function openModalAnimalModify(button) {
+
+            console.log(button.dataset);
+
+            document.getElementById("idAnimal").value = button.dataset.id;
+            document.getElementById("nomAnimal").value = button.dataset.nomAnimal;
+            document.getElementById("espaceAnimal").value = button.dataset.espece;
+            document.getElementById("AlimentationAnimal").value = button.dataset.alimentation;
+            document.getElementById("imageAnimal").value = button.dataset.image;
+            document.getElementById("paysorigineAnimal").value = button.dataset.paysorigine;
+            document.getElementById("descriptioncourteAnimal").value = button.dataset.descriptioncourte;
+            document.getElementById("habitatAnimal").value = button.dataset.idHabitat;
+
+
+            document.getElementById("updateAnimal").classList.remove("hidden");
+            document.getElementById("updateAnimal").classList.add("block");
+
+        }
+
+
+        function closeModalAnimalModify() {
+            document.getElementById("updateAnimal").classList.remove("block");
+            document.getElementById("updateAnimal").classList.add("hidden");
 
         }
     </script>
