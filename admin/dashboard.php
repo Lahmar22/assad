@@ -266,10 +266,14 @@ $resultAnimal = $conn->query($sqlAnimal);
                                             Supprimer
                                         </button>
                                     </form>
-                                    <button
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
                                         type="button"
-
-                                        class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                        onclick="openModalhabitatModify(this)"
+                                        data-id-habitat="<?= $row['id_habitat'] ?>"
+                                        data-nom-habitat="<?= $row['nomHabitat'] ?>"
+                                        data-type-climat="<?= $row['typeclimat'] ?>"
+                                        data-description="<?= $row['description'] ?>"
+                                        data-zonezoo="<?= $row['zonezoo'] ?>" >
                                         Modifier
                                     </button>
 
@@ -340,7 +344,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                         data-paysorigine="<?= $row['paysorigine'] ?>"
                                         data-descriptioncourte="<?= $row['descriptioncourte'] ?>"
                                         data-id-habitat="<?= $row['id_habitat'] ?>">
-                                        UPDATE
+                                        Modifier
                                     </button>
 
                                 </td>
@@ -400,6 +404,55 @@ $resultAnimal = $conn->query($sqlAnimal);
                             Ajout Habitat
                         </button>
                         <button data-modal-hide="addAnimal" type="button" onclick="closeModalHabitat()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- modal update habitat -->
+     <div id="modifierHabitat" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <div class="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
+                <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+                    <button type="button" onclick="closeModalModifierHabitat()" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="addAnimal">
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <form action="../controller/modifierHabitat.php" method="POST">
+                    <input id="idhabitat" name="id" type="hidden" >
+                    <div class="space-y-4">
+                        <div class="col-span-2">
+                            <label for="nomhabitat" class="block mb-2.5 text-sm font-medium text-heading">Nom Habitat</label>
+                            <input id="nomHabitat" type="text" name="nomhabitat" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+                        </div>
+                        <div>
+                            <label for="typeclimat" class="block text-sm font-medium text-gray-700 mb-2">Type Climat</label>
+                            <input id="typeClimatHabitat" type="text" name="typeclimat" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+
+                        </div>
+                        <div class="col-span-2">
+                            <label for="description" class="block mb-2 text-sm font-medium text-gray-700">
+                                Description
+                            </label>
+                            <textarea id="description" name="description" rows="3"
+                                class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                placeholder="Entrez la description ici..." required></textarea>
+                        </div>
+                        <div>
+                            <label for="zonezoo" class="block text-sm font-medium text-gray-700 mb-2">zone zoo</label>
+                            <input id="zonezoo" type="text" name="zonezoo" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required="">
+
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
+                        <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+                            
+                            Modifier Habitat
+                        </button>
+                        <button data-modal-hide="addAnimal" type="button" onclick="closeModalModifierHabitat()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -536,9 +589,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                     </div>
                     <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
                         <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
-                            <svg class="w-4 h-4 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
-                            </svg>
+                            
                             Modifier Animal
                         </button>
                         <button data-modal-hide="addAnimal" type="button" onclick="closeModalAnimalModify()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
@@ -598,6 +649,30 @@ $resultAnimal = $conn->query($sqlAnimal);
         function closeModalAnimalModify() {
             document.getElementById("updateAnimal").classList.remove("block");
             document.getElementById("updateAnimal").classList.add("hidden");
+
+        }
+
+        function openModalhabitatModify(button) {
+
+            console.log(button.dataset);
+
+            document.getElementById("idhabitat").value = button.dataset.idHabitat;
+            document.getElementById("nomHabitat").value = button.dataset.nomHabitat;
+            document.getElementById("typeClimatHabitat").value = button.dataset.typeClimat;
+            document.getElementById("description").value = button.dataset.description;
+            document.getElementById("zonezoo").value = button.dataset.zonezoo;
+            
+
+
+            document.getElementById("modifierHabitat").classList.remove("hidden");
+            document.getElementById("modifierHabitat").classList.add("block");
+
+        }
+
+
+        function closeModalModifierHabitat() {
+            document.getElementById("modifierHabitat").classList.remove("block");
+            document.getElementById("modifierHabitat").classList.add("hidden");
 
         }
     </script>
