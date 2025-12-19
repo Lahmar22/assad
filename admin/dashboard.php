@@ -22,6 +22,22 @@ $sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.ali
 
 $resultAnimal = $conn->query($sqlAnimal);
 
+$sqlTotalGuid = "SELECT COUNT(*) AS total FROM utilisateur WHERE role = 'guid'";
+
+$sqlTotalVisiteur = "SELECT COUNT(*) AS total FROM utilisateur WHERE role = 'visiteur'";
+
+
+$visiteur_count = $conn->query($sqlTotalVisiteur)->fetch_assoc()['total'];
+$guid_count = $conn->query($sqlTotalGuid)->fetch_assoc()['total'];
+
+
+$total = $visiteur_count + $guid_count ;
+
+if ($total != 0) {
+    $visiteur_percentage = ($visiteur_count / $total) * 100;
+    $guid_percentage = ($guid_count / $total) * 100;
+}
+
 
 
 ?>
@@ -273,7 +289,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                                         data-nom-habitat="<?= $row['nomHabitat'] ?>"
                                         data-type-climat="<?= $row['typeclimat'] ?>"
                                         data-description="<?= $row['description'] ?>"
-                                        data-zonezoo="<?= $row['zonezoo'] ?>" >
+                                        data-zonezoo="<?= $row['zonezoo'] ?>">
                                         Modifier
                                     </button>
 
@@ -356,6 +372,103 @@ $resultAnimal = $conn->query($sqlAnimal);
 
         </section>
 
+        <section class="mb-8 mt-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                <svg class="w-6 h-6 inline-block mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Statistics
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Carnivore Card -->
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition border-t-4 border-red-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Visiteur</p>
+                            <h4 class="text-3xl font-bold text-gray-800 mt-1">
+                                <?php echo $visiteur_count ?? 0; ?>
+                            </h4>
+                        </div>
+                        
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between text-sm mb-2">
+                            <span class="text-gray-600">Percentage</span>
+                            <span class="font-semibold text-red-600">
+                                <?php echo number_format($visiteur_percentage, 2, ',', ' ') ?? 0; ?>%
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full transition-all duration-500"
+                                style="width: <?php echo $visiteur_percentage ?? 0; ?>%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Herbivore Card -->
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition border-t-4 border-green-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Guid</p>
+                            <h4 class="text-3xl font-bold text-gray-800 mt-1">
+                                <?php echo $guid_count ?? 0; ?>
+                            </h4>
+                        </div>
+                        
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between text-sm mb-2">
+                            <span class="text-gray-600">Percentage</span>
+                            <span class="font-semibold text-green-600">
+                                <?php echo number_format($guid_percentage, 2, ',', ' ') ?? 0; ?>%
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                style="width: <?php echo $guid_percentage ?? 0; ?>%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+            </div>
+
+            <!-- Total Animals Summary -->
+            <div class="mt-6 bg-gradient-to-r from-green-600 to-emerald-700 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C10.9 2 10 2.9 10 4C10 4.7 10.4 5.4 11 5.7V7C9.3 7 8 8.3 8 10V11H6V10C6 9.4 5.6 9 5 9C4.4 9 4 9.4 4 10V14C4 14.6 4.4 15 5 15C5.6 15 6 14.6 6 14V13H8V14C8 15.7 9.3 17 11 17V18.3C10.4 18.6 10 19.3 10 20C10 21.1 10.9 22 12 22C13.1 22 14 21.1 14 20C14 19.3 13.6 18.6 13 18.3V17C14.7 17 16 15.7 16 14V13H18V14C18 14.6 18.4 15 19 15C19.6 15 20 14.6 20 14V10C20 9.4 19.6 9 19 9C18.4 9 18 9.4 18 10V11H16V10C16 8.3 14.7 7 13 7V5.7C13.6 5.4 14 4.7 14 4C14 2.9 13.1 2 12 2Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm opacity-90 font-medium">Total Animals</p>
+                            <p class="text-3xl font-bold">
+                                <?= $total  ?? 0; ?>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 text-sm">
+                        <div class="text-center">
+                            <p class="opacity-90">Visiteur</p>
+                            <p class="text-xl font-bold"><?php echo $visiteur_count ?? 0; ?></p>
+                        </div>
+                        <div class="text-center">
+                            <p class="opacity-90">Guid</p>
+                            <p class="text-xl font-bold"><?php echo $guid_count ?? 0; ?></p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
 
     </main>
@@ -410,7 +523,7 @@ $resultAnimal = $conn->query($sqlAnimal);
         </div>
     </div>
     <!-- modal update habitat -->
-     <div id="modifierHabitat" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="modifierHabitat" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white border border-default rounded-base shadow-sm p-4 md:p-6">
                 <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
@@ -422,7 +535,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                     </button>
                 </div>
                 <form action="../controller/modifierHabitat.php" method="POST">
-                    <input id="idhabitat" name="id" type="hidden" >
+                    <input id="idhabitat" name="id" type="hidden">
                     <div class="space-y-4">
                         <div class="col-span-2">
                             <label for="nomhabitat" class="block mb-2.5 text-sm font-medium text-heading">Nom Habitat</label>
@@ -449,7 +562,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                     </div>
                     <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
                         <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
-                            
+
                             Modifier Habitat
                         </button>
                         <button data-modal-hide="addAnimal" type="button" onclick="closeModalModifierHabitat()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
@@ -589,7 +702,7 @@ $resultAnimal = $conn->query($sqlAnimal);
                     </div>
                     <div class="flex items-center space-x-4 border-t border-default pt-4 md:pt-6">
                         <button type="submit" class="inline-flex items-center  text-white bg-green-600  box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
-                            
+
                             Modifier Animal
                         </button>
                         <button data-modal-hide="addAnimal" type="button" onclick="closeModalAnimalModify()" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
@@ -661,7 +774,7 @@ $resultAnimal = $conn->query($sqlAnimal);
             document.getElementById("typeClimatHabitat").value = button.dataset.typeClimat;
             document.getElementById("description").value = button.dataset.description;
             document.getElementById("zonezoo").value = button.dataset.zonezoo;
-            
+
 
 
             document.getElementById("modifierHabitat").classList.remove("hidden");
