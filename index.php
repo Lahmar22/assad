@@ -18,56 +18,69 @@
 </head>
 
 <body class="bg-gray-100 h-screen flex items-center justify-center font-sans">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md relative">
 
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <!-- Logo -->
+            <div class="flex justify-center -mt-16 mb-6">
+                <img src="images/assad.png" alt="Logo" class="w-32 h-32 object-contain rounded-full border-4 border-white shadow-lg">
+            </div>
 
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Welcome to ASSAD</h1>
+            <!-- Title -->
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-extrabold text-gray-800">Welcome to ASSAD</h1>
+                <p class="text-gray-500 mt-2">Sign in to your account</p>
+            </div>
+
+            <!-- Form -->
+            <form action="controller/login.php" method="POST" class="space-y-5">
+                <div>
+                    <label for="email" class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <input type="email" name="email" placeholder="you@example.com"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent shadow-sm transition" required>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+                    <input type="password" name="password" placeholder="••••••••"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent shadow-sm transition" required>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-50 transition duration-200">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Signup link -->
+            <p class="text-center text-gray-500 text-sm mt-6">
+                Don't have an account?
+                <button onclick="toggleModal('signup-modal')" class="text-indigo-600 font-semibold hover:underline">
+                    Sign up
+                </button>
+            </p>
+
 
         </div>
-
-        <form action="controller/login.php" method="POST">
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
-                <input type="email" name="email"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="you@example.com" required>
-            </div>
-
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
-                <input type="password" name="password"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="••••••••" required>
-
-            </div>
-
-            <button type="submit"
-                class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-200">
-                Sign In
-            </button>
-        </form>
-
-        <p class="text-center text-gray-600 text-sm mt-6">
-            Don't have an account?
-            <button onclick="toggleModal('signup-modal')" class="text-indigo-600 font-bold hover:underline">
-                Sign up
-            </button>
-        </p>
     </div>
 
-    <div id="signup-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
 
+
+    <div id="signup-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 
+            <!-- Background overlay -->
             <div onclick="toggleModal('signup-modal')" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
+            <!-- Centering trick -->
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white rounded-2xl shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative">
 
-                <div class="absolute top-0 right-0 pt-4 pr-4">
-                    <button type="button" onclick="toggleModal('signup-modal')" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                <!-- Close button -->
+                <div class="absolute top-4 right-4">
+                    <button type="button" onclick="toggleModal('signup-modal')" class="text-gray-400 hover:text-gray-600 focus:outline-none">
                         <span class="sr-only">Close</span>
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -75,54 +88,62 @@
                     </button>
                 </div>
 
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                Create an Account
-                            </h3>
-                            <div class="mt-4">
-                                <form action="controller/inscription.php" method="POST">
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="nom">Nom</label>
-                                        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" name="nom" type="text" placeholder="Doe">
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="prenom">Prenom</label>
-                                        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" name="prenom" type="text" placeholder="John ">
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
-                                        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" name="email" type="email" placeholder="john@example.com">
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-                                        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" name="password" type="password" placeholder="••••••••">
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 text-sm font-bold mb-2" for="role">Role</label>
-                                        <select
-                                            id="role"
-                                            name="role"
-                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
-                                            <option value="">Role</option>
-                                            <option value="visiteur">Visiteur</option>
-                                            <option value="guid">Guid</option>
+                <!-- Logo -->
+                <div class="flex justify-center -mt-16 mb-6">
+                    <img src="images/assad.png" alt="Logo" class="w-32 h-32 object-contain rounded-full border-4 border-white shadow-lg">
+                </div>
 
-                                        </select>
-                                    </div>
+                <!-- Modal content -->
+                <div class="px-6 pb-6">
+                    <h3 class="text-center text-2xl font-semibold text-gray-900 mb-4" id="modal-title">
+                        Create an Account
+                    </h3>
 
-                                    <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                        Sign Up
-                                    </button>
-                                </form>
-                            </div>
+                    <form action="controller/inscription.php" method="POST" class="space-y-4">
+                        <div>
+                            <label for="nom" class="block text-gray-700 font-medium mb-1">Nom</label>
+                            <input type="text" name="nom" placeholder="Doe" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition">
                         </div>
-                    </div>
+
+                        <div>
+                            <label for="prenom" class="block text-gray-700 font-medium mb-1">Prenom</label>
+                            <input type="text" name="prenom" placeholder="John" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
+                            <input type="email" name="email" placeholder="john@example.com" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-gray-700 font-medium mb-1">Password</label>
+                            <input type="password" name="password" placeholder="••••••••" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition">
+                        </div>
+
+                        <div>
+                            <label for="role" class="block text-gray-700 font-medium mb-1">Role</label>
+                            <select name="role" id="role" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm transition">
+                                <option value="">Select Role</option>
+                                <option value="visiteur">Visiteur</option>
+                                <option value="guid">Guid</option>
+                            </select>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200">
+                            Sign Up
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <script>
         function toggleModal(modalID) {
