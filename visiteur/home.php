@@ -27,6 +27,7 @@ $sqlMesReservation = "SELECT r.id, r.idvisite, r.idutilisateur, r.nbpersonnes, r
 
 $resultMesReservation = $conn->query($sqlMesReservation);
 
+
 ?>
 
 <!DOCTYPE html>
@@ -231,12 +232,21 @@ $resultMesReservation = $conn->query($sqlMesReservation);
                         </div>
 
                         <!-- Footer -->
-                        <div class="p-4">
+                        <div class="flex gap-4 p-4">
+                            <!-- Bouton Réserver -->
                             <button type="button"
                                 onclick="openModalReserver(this)"
                                 data-id="<?= $row['id'] ?>"
-                                class="w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition">
+                                class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-3 rounded-2xl shadow-md hover:from-white hover:to-white hover:text-green-600 hover:scale-105 transform transition-all duration-300">
                                 Réserver maintenant
+                            </button>
+
+                            <!-- Bouton Voir Parcour -->
+                            <button type="button"
+                                onclick="openModalParcour(this)"
+                                data-id="<?= $row['id'] ?>"
+                                class="flex-1 border-2 border-green-600 text-green-600 font-semibold py-3 rounded-2xl hover:bg-green-600 hover:text-white hover:scale-105 transform transition-all duration-300">
+                                Voir Parcour
                             </button>
                         </div>
 
@@ -448,7 +458,7 @@ $resultMesReservation = $conn->query($sqlMesReservation);
 
             <div class="w-full md:w-1/2 h-64 md:h-auto relative">
                 <img src="https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?q=80&w=800&auto=format&fit=crop"
-                    alt="Lion de l'Atlas"   
+                    alt="Lion de l'Atlas"
                     class="absolute inset-0 w-full h-full object-cover">
 
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden"></div>
@@ -516,6 +526,23 @@ $resultMesReservation = $conn->query($sqlMesReservation);
     </div>
 
 
+    <div id="modalParcour" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6 relative">
+            <button onclick="closeModalParcour()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold transition-transform hover:scale-110">
+                &times;
+            </button>
+
+
+            <h2 class="text-3xl font-extrabold mb-6 text-center text-green-700">Étapes du Parcours</h2>
+
+
+            <ul id="parcourList" class="space-y-4 max-h-96 overflow-y-auto px-2">
+                
+            </ul>
+        </div>
+    </div>
+
     <script>
         function openModalReserver(button) {
 
@@ -551,6 +578,31 @@ $resultMesReservation = $conn->query($sqlMesReservation);
         function closeModalAssadAtlass() {
             document.getElementById("assadAtlass").classList.remove("block");
             document.getElementById("assadAtlass").classList.add("hidden");
+        }
+
+        function openModalParcour(button) {
+
+            const visiteId = button.getAttribute('data-id');
+            const modal = document.getElementById('modalParcour');
+            const content = document.getElementById('parcourList');
+
+            modal.classList.remove('hidden');
+            content.innerHTML = "Chargement...";
+
+
+            fetch(`get_visite_Parcour.php?id=${visiteId}`)
+                .then(response => response.text())
+                .then(data => {
+                    content.innerHTML = data; 
+                })
+                .catch(error => {
+                    content.innerHTML = "Erreur lors du chargement.";
+                    console.error('Error:', error);
+                });
+        }
+
+        function closeModalParcour() {
+            document.getElementById('modalParcour').classList.add('hidden');
         }
 
         setTimeout(() => {
