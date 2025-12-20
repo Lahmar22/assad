@@ -2,10 +2,12 @@
 session_start();
 require "connexion.php";
 
+
 if (!isset($_POST["email"], $_POST["password"])) {
-    header("Location: ../login.php?error=Please fill in all fields");
+    header("Location: ../index.php?error=Please fill in all fields");
     exit();
 }
+
 
 $email = trim($_POST["email"]);
 $password = $_POST["password"];
@@ -40,23 +42,26 @@ $resUser = $stmtUser->get_result();
 if ($resUser->num_rows === 1) {
     $user = $resUser->fetch_assoc();
 
-    if (password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id_user'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['nom'] = $user['nom'];
-        $_SESSION['prenom'] = $user['prenom'];
-        $_SESSION['role'] = $user['role'];
+    if (password_verify($password, $user['password'])) {    
 
         if ($user['role'] === 'visiteur') {
-            if($user['statuse'] === 'Désactiver'){
+            $_SESSION['user_idVisiteur'] = $user['id_user'];
+            $_SESSION['emailVisiteur'] = $user['email'];
+            $_SESSION['nomVisiteur'] = $user['nom'];
+            $_SESSION['prenomVisiteur'] = $user['prenom'];
+            if ($user['statuse'] === 'Désactiver') {
                 header("Location: ../pageAttente.php ");
-            }else{
+            } else {
                 header("Location: ../visiteur/home.php ");
             }
         } elseif ($user['role'] === 'guid') {
-            if($user['statuse'] === 'Désactiver'){
+            $_SESSION['user_idGuid'] = $user['id_user'];
+            $_SESSION['emailGuid'] = $user['email'];
+            $_SESSION['nomGuid'] = $user['nom'];
+            $_SESSION['prenomGuid'] = $user['prenom'];
+            if ($user['statuse'] === 'Désactiver') {
                 header("Location: ../pageAttente.php ");
-            }else{
+            } else {
                 header("Location: ../guid/home.php ");
             }
         } else {
