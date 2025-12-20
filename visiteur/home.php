@@ -10,10 +10,15 @@ if (isset($_SESSION['message'])) {
     $msg = $_SESSION['message'];
     unset($_SESSION['message']);
 }
+if (isset($_SESSION['messageCommentaire'])) {
+    $msgCommentaire = $_SESSION['messageCommentaire'];
+    unset($_SESSION['messageCommentaire']);
+}
 
 require "../controller/connexion.php";
 
 $id = $_SESSION['user_idVisiteur'];
+
 
 $nameVisite_guid = $_POST["nameVisite_guid"];
 
@@ -47,6 +52,10 @@ $resultVisiteGuidCherche = $conn->query($sqlVisiteGuidCherche);
 $sqlMesReservation = "SELECT r.id, r.idvisite, r.idutilisateur, r.nbpersonnes, r.datereservation, v.id AS visite_id, v.titre, DATE(v.dateheure) AS dateVG, TIME(v.dateheure) AS timeVG, v.statut, v.duree, v.prix, u.id_user, u.nom, u.prenom FROM reservations r INNER JOIN visitesguidees v ON r.idvisite = v.id INNER JOIN utilisateur u ON r.idutilisateur = u.id_user WHERE r.idutilisateur = $id ";
 
 $resultMesReservation = $conn->query($sqlMesReservation);
+
+$sqlParcour = "SELECT r.id, r.idvisite, r.idutilisateur, v.id AS visite_id, v.titre, v.dateheure,  u.id_user, u.nom, u.prenom FROM reservations r INNER JOIN visitesguidees v ON r.idvisite = v.id INNER JOIN utilisateur u ON r.idutilisateur = u.id_user WHERE r.idutilisateur = $id AND v.dateheure < NOW() ";
+
+$resultParcouru = $conn->query($sqlParcour);
 
 
 ?>
@@ -119,6 +128,12 @@ $resultMesReservation = $conn->query($sqlMesReservation);
             <button type="button" onclick="openModalAssadAtlass()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
                 Asaad – Lion des Atlas
             </button>
+            <button type="button"
+                onclick="openModalGuidParcouru()"
+                class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
+                Visites guidées déjà parcourues
+            </button>
+
 
 
         </nav>
@@ -374,6 +389,24 @@ $resultMesReservation = $conn->query($sqlMesReservation);
                     <!-- Message -->
                     <span class="font-semibold">
                         <?= htmlspecialchars($msg) ?>
+                    </span>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($msgCommentaire)) : ?>
+            <div id="msgCommentaire" class="fixed top-6 right-6 z-50">
+                <div class="flex items-center gap-3 bg-green-100 border border-green-400 text-green-800 px-6 py-4 rounded-xl shadow-lg animate-fade-in">
+                    <!-- Icon -->
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5 13l4 4L19 7" />
+                    </svg>
+
+                    <!-- Message -->
+                    <span class="font-semibold">
+                        <?= htmlspecialchars($msgCommentaire) ?>
                     </span>
                 </div>
             </div>
@@ -713,6 +746,68 @@ $resultMesReservation = $conn->query($sqlMesReservation);
         </div>
     </div>
 
+    <div id="modalGuidParcouru"
+        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
+                <h2 class="text-xl font-bold text-gray-800">
+                    🗺️ Visites guidées déjà parcourues
+                </h2>
+                <button onclick="closeModalGuidParcouru()"
+                    class="text-gray-400 hover:text-gray-600 text-2xl font-bold">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+
+                <!-- ONE VISITE CARD -->
+                <?php while ($row = $resultParcouru->fetch_assoc()) { ?>
+                    <div class="border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                <?= $row['titre'] ?>
+                            </h3>
+                            <span class="text-sm text-gray-500">
+                                📅 <?= $row['dateheure'] ?>
+                            </span>
+                            
+                        </div>
+                        <!-- Comment form -->
+                        <form action="../controller/addComment.php" method="POST" class="mt-4">
+                            <input type="hidden" name="id_visite" value="<?= $row['visite_id'] ?>">
+                            <input type="hidden" name="id_user" value="<?= $row['id_user'] ?>">
+
+                            <textarea name="commentaire" rows="3"
+                                class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                                placeholder="Ajoutez votre commentaire sur cette visite..."></textarea>
+
+                            <button type="submit"   
+                                class="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+                                Ajouter commentaire
+                            </button>
+                        </form>
+                    </div>
+                <?php } ?>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t bg-gray-50 text-right">
+                <button onclick="closeModalGuidParcouru()"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         function openModalReserver(button) {
 
@@ -775,8 +870,24 @@ $resultMesReservation = $conn->query($sqlMesReservation);
             document.getElementById('modalParcour').classList.add('hidden');
         }
 
+        function openModalGuidParcouru() {
+            document.getElementById('modalGuidParcouru').classList.remove('hidden');
+        }
+
+        function closeModalGuidParcouru() {
+            document.getElementById('modalGuidParcouru').classList.add('hidden');
+        }
+
         setTimeout(() => {
             const alert = document.querySelector('#msg');
+            if (alert) {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 2000);
+        setTimeout(() => {
+            const alert = document.querySelector('#msgCommentaire');
             if (alert) {
                 alert.style.opacity = '0';
                 alert.style.transition = 'opacity 0.5s';
