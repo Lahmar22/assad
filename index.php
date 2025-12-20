@@ -108,7 +108,7 @@
                                             <option value="">Role</option>
                                             <option value="visiteur">Visiteur</option>
                                             <option value="guid">Guid</option>
-                                            
+
                                         </select>
                                     </div>
 
