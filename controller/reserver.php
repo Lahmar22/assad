@@ -1,4 +1,5 @@
 <?php 
+session_start();
 require "../controller/connexion.php";
 
 $id_visiteGuid = $_POST['id_visiteGuid'];
@@ -10,6 +11,7 @@ $sqlReservation = "INSERT INTO reservations (idvisite, idutilisateur, nbpersonne
 
 if($conn->query($sqlReservation)=== true){
     header("location: ../visiteur/home.php");
+    $_SESSION['message'] = "Visite guidée bien réservée";
 
 } else {
     echo "Erreur : " . $conn->error;
