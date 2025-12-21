@@ -54,10 +54,18 @@ $resultMesReservation = $conn->query($sqlMesReservation);
         id="sidebar"
         class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg flex flex-col z-40
            transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
-        <div class="p-6 border-b">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-lg"></div>
-                <h1 class="text-xl font-bold text-gray-800">ASSAD</h1>
+        <div class="p-6 border-b bg-white shadow-sm rounded-b-lg">
+            <div class="flex justify-center items-center gap-4">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <img src="../images/assad.png" alt="Logo"
+                        class="w-20 h-20 object-contain rounded-full border-4 border-white shadow-md">
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                    ASSAD
+                </h1>
             </div>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
