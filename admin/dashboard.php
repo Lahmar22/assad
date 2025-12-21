@@ -31,12 +31,16 @@ $visiteur_count = $conn->query($sqlTotalVisiteur)->fetch_assoc()['total'];
 $guid_count = $conn->query($sqlTotalGuid)->fetch_assoc()['total'];
 
 
-$total = $visiteur_count + $guid_count ;
+$total = $visiteur_count + $guid_count;
 
 if ($total != 0) {
     $visiteur_percentage = ($visiteur_count / $total) * 100;
     $guid_percentage = ($guid_count / $total) * 100;
 }
+
+$sqlMesReservation = "SELECT r.id, r.idvisite, r.idutilisateur, r.nbpersonnes, r.datereservation, v.id AS visite_id, v.titre, DATE(v.dateheure) AS dateVG, TIME(v.dateheure) AS timeVG, v.statut, v.duree, v.prix, u.id_user, u.nom, u.prenom FROM reservations r INNER JOIN visitesguidees v ON r.idvisite = v.id INNER JOIN utilisateur u ON r.idutilisateur = u.id_user";
+
+$resultMesReservation = $conn->query($sqlMesReservation);
 
 
 
@@ -71,10 +75,18 @@ if ($total != 0) {
         id="sidebar"
         class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg flex flex-col z-40
            transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
-        <div class="p-6 border-b">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-lg"></div>
-                <h1 class="text-xl font-bold text-gray-800">ASSAD</h1>
+        <div class="p-6 border-b bg-white shadow-sm rounded-b-lg">
+            <div class="flex justify-center items-center gap-4">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <img src="../images/assad.png" alt="Logo"
+                        class="w-20 h-20 object-contain rounded-full border-4 border-white shadow-md">
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                    ASSAD
+                </h1>
             </div>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
@@ -83,6 +95,9 @@ if ($total != 0) {
             </button>
             <button type="button" onclick="openModalHabitat()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
                 Ajout Habitat
+            </button>
+            <button type="button" onclick="openModalMesReserver()" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition text-center">
+                Liste Reservations
             </button>
 
 
@@ -204,7 +219,7 @@ if ($total != 0) {
                                 <td class="px-6 py-4 text-sm text-gray-700"><?= $row["email"] ?></td>
                                 <td class="px-6 py-4 text-sm">
                                     <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                <?= $row["role"] === 'admin' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' ?>">
+                                <?= $row["role"] === 'guid' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' ?>">
                                         <?= $row["role"] ?>
                                     </span>
                                 </td>
@@ -391,7 +406,7 @@ if ($total != 0) {
                                 <?php echo $visiteur_count ?? 0; ?>
                             </h4>
                         </div>
-                        
+
                     </div>
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-sm mb-2">
@@ -417,7 +432,7 @@ if ($total != 0) {
                                 <?php echo $guid_count ?? 0; ?>
                             </h4>
                         </div>
-                        
+
                     </div>
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-sm mb-2">
@@ -433,40 +448,35 @@ if ($total != 0) {
                         </div>
                     </div>
                 </div>
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition border-t-4 border-green-500">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center gap-4">
 
-                
+                            <div>
+                                <p class="text-sm opacity-90 font-medium">Total</p>
+                                <p class="text-3xl font-bold">
+                                    <?= $total  ?? 0; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 text-sm">
+                            <div class="text-center">
+                                <p class="opacity-90">Visiteur</p>
+                                <p class="text-xl font-bold"><?php echo $visiteur_count ?? 0; ?></p>
+                            </div>
+                            <div class="text-center">
+                                <p class="opacity-90">Guid</p>
+                                <p class="text-xl font-bold"><?php echo $guid_count ?? 0; ?></p>
+                            </div>
 
-            </div>
-
-            <!-- Total Animals Summary -->
-            <div class="mt-6 bg-gradient-to-r from-green-600 to-emerald-700 rounded-lg shadow-lg p-6 text-white">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C10.9 2 10 2.9 10 4C10 4.7 10.4 5.4 11 5.7V7C9.3 7 8 8.3 8 10V11H6V10C6 9.4 5.6 9 5 9C4.4 9 4 9.4 4 10V14C4 14.6 4.4 15 5 15C5.6 15 6 14.6 6 14V13H8V14C8 15.7 9.3 17 11 17V18.3C10.4 18.6 10 19.3 10 20C10 21.1 10.9 22 12 22C13.1 22 14 21.1 14 20C14 19.3 13.6 18.6 13 18.3V17C14.7 17 16 15.7 16 14V13H18V14C18 14.6 18.4 15 19 15C19.6 15 20 14.6 20 14V10C20 9.4 19.6 9 19 9C18.4 9 18 9.4 18 10V11H16V10C16 8.3 14.7 7 13 7V5.7C13.6 5.4 14 4.7 14 4C14 2.9 13.1 2 12 2Z" />
-                            </svg>
                         </div>
-                        <div>
-                            <p class="text-sm opacity-90 font-medium">Total Animals</p>
-                            <p class="text-3xl font-bold">
-                                <?= $total  ?? 0; ?>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex gap-6 text-sm">
-                        <div class="text-center">
-                            <p class="opacity-90">Visiteur</p>
-                            <p class="text-xl font-bold"><?php echo $visiteur_count ?? 0; ?></p>
-                        </div>
-                        <div class="text-center">
-                            <p class="opacity-90">Guid</p>
-                            <p class="text-xl font-bold"><?php echo $guid_count ?? 0; ?></p>
-                        </div>
-                        
                     </div>
                 </div>
+
+
+
             </div>
+
         </section>
 
 
@@ -711,6 +721,102 @@ if ($total != 0) {
             </div>
         </div>
     </div>
+    <div id="mesReservation"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl mx-4 relative animate-fade-in">
+
+            <!-- Close Button -->
+            <button onclick="closeModalMesReserver()"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">
+                &times;
+            </button>
+
+            <!-- Header -->
+            <div class="border-b px-6 py-4">
+                <h2 class="text-2xl font-bold text-gray-800 text-center">
+                    📋 List Réservations
+                </h2>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 overflow-x-auto max-h-[70vh]">
+
+                <table class="min-w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+                    <thead class="bg-gray-100 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">Titre</th>
+                            <th class="px-4 py-3 text-left font-semibold">Utilisateur</th>
+                            <th class="px-4 py-3 text-center font-semibold">Personnes</th>
+                            <th class="px-4 py-3 text-center font-semibold">Réservé le</th>
+                            <th class="px-4 py-3 text-center font-semibold">Date visite</th>
+                            <th class="px-4 py-3 text-center font-semibold">Heure</th>
+                            <th class="px-4 py-3 text-center font-semibold">Statut</th>
+                            <th class="px-4 py-3 text-center font-semibold">Durée</th>
+                            <th class="px-4 py-3 text-center font-semibold">Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <?php if ($resultMesReservation->num_rows > 0) {
+                            while ($row = $resultMesReservation->fetch_assoc()) { ?>
+                                <tr class="hover:bg-gray-50 transition">
+
+                                    <td class="px-4 py-3 font-medium">
+                                        <?= htmlspecialchars($row["titre"]) ?>
+                                    </td>
+
+                                    <td class="px-4 py-3">
+                                        <?= htmlspecialchars($row["nom"] . ' ' . $row["prenom"]) ?>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        <?= $row["nbpersonnes"] ?>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        <?= $row["datereservation"] ?>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        <?= $row["dateVG"] ?>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        <?= $row["timeVG"] ?>
+                                    </td>
+
+                                    <!-- Status Badge -->
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    <?= $row["statut"] === 'active'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-yellow-100 text-yellow-700' ?>">
+                                            <?= ucfirst($row["statut"]) ?>
+                                        </span>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        <?= $row["duree"] ?>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center font-semibold text-green-600">
+                                        <?= $row["prix"] * $row["nbpersonnes"] ?> MAD
+                                    </td>
+
+
+
+                                </tr>
+                            <?php }
+                        } else { ?>
+                            <td colspan="10" class=" text-xl px-4 py-3 text-center">🚫 Aucune réservation trouvée</td>
+                        <?php } ?>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
 
     <script>
         function openModalAnimal() {
@@ -787,6 +893,17 @@ if ($total != 0) {
             document.getElementById("modifierHabitat").classList.remove("block");
             document.getElementById("modifierHabitat").classList.add("hidden");
 
+        }
+
+        function openModalMesReserver() {
+
+            document.getElementById("mesReservation").classList.remove("hidden");
+            document.getElementById("mesReservation").classList.add("block");
+        }
+
+        function closeModalMesReserver() {
+            document.getElementById("mesReservation").classList.remove("block");
+            document.getElementById("mesReservation").classList.add("hidden");
         }
     </script>
 </body>
