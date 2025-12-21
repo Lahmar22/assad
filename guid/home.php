@@ -8,9 +8,24 @@ if (!isset($_SESSION['user_idGuid'])) {
 
 require "../controller/connexion.php";
 
+
+$filterPaysOrigin = $_POST['filterPaysOrigin'];
+$filter_habitat = $_POST['filter_habitat'];
+
 $sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
 
 $resultAnimal = $conn->query($sqlAnimal);
+
+$sqlAnimalhabitat = "SELECT nomHabitat FROM habitats ";
+$sqlAnimalPaysOrigin = "SELECT paysorigine FROM animaux GROUP BY paysorigine ";
+
+$resultAnimalBypayes = $conn->query($sqlAnimalPaysOrigin);
+
+$resultAnimalByHabitat = $conn->query($sqlAnimalhabitat);
+
+$sqlAnimalFiltre = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat  WHERE animaux.paysorigine = '$filterPaysOrigin' AND habitats.nomHabitat = '$filter_habitat' ";
+
+$resultAnimalFiltre = $conn->query($sqlAnimalFiltre);
 
 $sqlVisiteGuid = "SELECT * FROM visitesguidees";
 
@@ -118,35 +133,34 @@ $resultMesReservation = $conn->query($sqlMesReservation);
         <div id="filter" class="flex flex-col lg:flex-row gap-6 mb-8">
 
             <!-- Filter Form -->
-            <form action="index.php" method="POST"
+            <form action="home.php" method="POST"
                 class="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-lg shadow-md w-full">
 
                 <!-- Alimentaire -->
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Filter by Alimentaire
+                        Sélectionner une Pays d’origine
                     </label>
-                    <select name="filterAlimentaire"
+                    <select name="filterPaysOrigin"
                         class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
-                        <option value="">All</option>
-                        <option value="carnivore">🥩 Carnivore</option>
-                        <option value="herbivore">🥦 Herbivore</option>
-                        <option value="omnivore">🥘 Omnivore</option>
+                        <option value="">Tout</option>
+                        <?php while ($row = $resultAnimalBypayes->fetch_assoc()) { ?>
+                            <option value="<?= $row['paysorigine'] ?>"><?= $row['paysorigine'] ?></option>
+                        <?php } ?>
                     </select>
                 </div>
 
                 <!-- Habitat -->
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Filter by Habitat
+                        Sélectionner un habitat
                     </label>
                     <select name="filter_habitat"
                         class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
-                        <option value="">All</option>
-                        <option value="1">🪶 Savane</option>
-                        <option value="2">🌳 Jungle</option>
-                        <option value="3">🏜️ Désert</option>
-                        <option value="4">🌊 Océan</option>
+                        <option value="">Tout</option>
+                        <?php while ($row = $resultAnimalByHabitat->fetch_assoc()) { ?>
+                            <option value="<?= $row['nomHabitat'] ?>"><?= $row['nomHabitat'] ?></option>
+                        <?php } ?>
                     </select>
                 </div>
 
@@ -159,16 +173,6 @@ $resultMesReservation = $conn->query($sqlMesReservation);
                 </div>
             </form>
 
-            <!-- Search Visit -->
-            <form class="bg-white p-6 rounded-xl shadow-lg w-full lg:w-1/3">
-                <h2 class="text-xl font-bold text-center mb-4">Rechercher une visite</h2>
-                <input type="text"
-                    placeholder="Nom de la visite..."
-                    class="w-full px-4 py-2 border rounded-lg mb-4">
-                <button class="w-full bg-blue-600 text-white py-2 rounded-lg">
-                    Rechercher
-                </button>
-            </form>
         </div>
 
 
@@ -241,23 +245,87 @@ $resultMesReservation = $conn->query($sqlMesReservation);
         </section>
 
 
-        <section>
-            <h1 class="text-3xl font-bold mb-6">Les Animaux</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <section class="py-10">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-10 text-center">
+                🐾 Les Animaux
+            </h1>
 
-                <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition">
-                        <img src="<?= $row['image'] ?>" class="w-full h-48 object-cover rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold"><?= $row['nomAnimal'] ?></h3>
-                            <p class="text-gray-600">Espèce : <?= $row['espèce'] ?></p>
-                            <p class="text-gray-600">Habitat : <?= $row['nomHabitat'] ?></p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                <?php if ($resultAnimalFiltre->num_rows > 0) {
+                    while ($row = $resultAnimalFiltre->fetch_assoc()) { ?>
+                        <div
+                            class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
 
+                            <!-- Image -->
+                            <div class="relative">
+                                <img src="<?= $row['image'] ?>"
+                                    class="w-full h-52 object-cover group-hover:scale-110 transition duration-500">
 
+                                <!-- Gradient overlay -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+                                <!-- Animal name on image -->
+                                <h3 class="absolute bottom-3 left-3 text-white text-xl font-bold">
+                                    <?= $row['nomAnimal'] ?>
+                                </h3>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="p-5 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                        <?= $row['espèce'] ?>
+                                    </span>
+                                </div>
+
+                                <p class="text-gray-600 text-sm">
+                                    <span class="font-semibold">Habitat :</span> <?= $row['nomHabitat'] ?>
+                                </p>
+
+                                <p class="text-gray-600 text-sm">
+                                    <span class="font-semibold">Pays d’origine :</span> <?= $row['paysorigine'] ?>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                <?php } ?>
+                    <?php } ?>
+                <?php } else { ?>
+                    <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
+                        <div
+                            class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
 
+                            <!-- Image -->
+                            <div class="relative">
+                                <img src="<?= $row['image'] ?>"
+                                    class="w-full h-52 object-cover group-hover:scale-110 transition duration-500">
+
+                                <!-- Gradient overlay -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+                                <!-- Animal name on image -->
+                                <h3 class="absolute bottom-3 left-3 text-white text-xl font-bold">
+                                    <?= $row['nomAnimal'] ?>
+                                </h3>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="p-5 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                        <?= $row['espèce'] ?>
+                                    </span>
+                                </div>
+
+                                <p class="text-gray-600 text-sm">
+                                    <span class="font-semibold">Habitat :</span> <?= $row['nomHabitat'] ?>
+                                </p>
+
+                                <p class="text-gray-600 text-sm">
+                                    <span class="font-semibold">Pays d’origine :</span> <?= $row['paysorigine'] ?>
+                                </p>
+                            </div>
+                        </div>
+                    <?php } ?>
+                <?php } ?>
             </div>
         </section>
 

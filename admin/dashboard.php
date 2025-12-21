@@ -9,6 +9,9 @@ if (!isset($_SESSION['id_admin'])) {
 
 require "../controller/connexion.php";
 
+$filterPaysOrigin = $_POST['filterPaysOrigin'];
+$filter_habitat = $_POST['filter_habitat'];
+
 $sql = "SELECT id_user, nom, prenom, email, role, statuse FROM utilisateur ";
 $result = $conn->query($sql);
 
@@ -21,6 +24,17 @@ $resultHbitat3 = $conn->query($sqlHabitat);
 $sqlAnimal = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, animaux.id_habitat, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat ";
 
 $resultAnimal = $conn->query($sqlAnimal);
+
+$sqlAnimalhabitat = "SELECT nomHabitat FROM habitats ";
+$sqlAnimalPaysOrigin = "SELECT paysorigine FROM animaux GROUP BY paysorigine ";
+
+$resultAnimalBypayes = $conn->query($sqlAnimalPaysOrigin);
+
+$resultAnimalByHabitat = $conn->query($sqlAnimalhabitat);
+
+$sqlAnimalFiltre = "SELECT animaux.id, animaux.nomAnimal, animaux.espèce, animaux.alimentation, animaux.image, animaux.paysorigine, animaux.descriptioncourte, habitats.nomHabitat FROM animaux INNER JOIN habitats ON animaux.id_habitat = habitats.id_habitat  WHERE animaux.paysorigine = '$filterPaysOrigin' AND habitats.nomHabitat = '$filter_habitat' ";
+
+$resultAnimalFiltre = $conn->query($sqlAnimalFiltre);
 
 $sqlTotalGuid = "SELECT COUNT(*) AS total FROM utilisateur WHERE role = 'guid'";
 
@@ -135,37 +149,35 @@ $resultMesReservation = $conn->query($sqlMesReservation);
 
 
         <div id="filter" class="flex flex-col lg:flex-row gap-6 mb-8">
-
             <!-- Filter Form -->
-            <form action="index.php" method="POST"
+            <form action="dashboard.php" method="POST"
                 class="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-lg shadow-md w-full">
 
                 <!-- Alimentaire -->
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Filter by Alimentaire
+                        Sélectionner une Pays d’origine
                     </label>
-                    <select name="filterAlimentaire"
+                    <select name="filterPaysOrigin"
                         class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
-                        <option value="">All</option>
-                        <option value="carnivore">🥩 Carnivore</option>
-                        <option value="herbivore">🥦 Herbivore</option>
-                        <option value="omnivore">🥘 Omnivore</option>
+                        <option value="">Tout</option>
+                        <?php while ($row = $resultAnimalBypayes->fetch_assoc()) { ?>
+                            <option value="<?= $row['paysorigine'] ?>"><?= $row['paysorigine'] ?></option>
+                        <?php } ?>
                     </select>
                 </div>
 
                 <!-- Habitat -->
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Filter by Habitat
+                        Sélectionner un habitat
                     </label>
                     <select name="filter_habitat"
                         class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
-                        <option value="">All</option>
-                        <option value="1">🪶 Savane</option>
-                        <option value="2">🌳 Jungle</option>
-                        <option value="3">🏜️ Désert</option>
-                        <option value="4">🌊 Océan</option>
+                        <option value="">Tout</option>
+                        <?php while ($row = $resultAnimalByHabitat->fetch_assoc()) { ?>
+                            <option value="<?= $row['nomHabitat'] ?>"><?= $row['nomHabitat'] ?></option>
+                        <?php } ?>
                     </select>
                 </div>
 
@@ -178,16 +190,6 @@ $resultMesReservation = $conn->query($sqlMesReservation);
                 </div>
             </form>
 
-            <!-- Search Visit -->
-            <form class="bg-white p-6 rounded-xl shadow-lg w-full lg:w-1/3">
-                <h2 class="text-xl font-bold text-center mb-4">Rechercher une visite</h2>
-                <input type="text"
-                    placeholder="Nom de la visite..."
-                    class="w-full px-4 py-2 border rounded-lg mb-4">
-                <button class="w-full bg-blue-600 text-white py-2 rounded-lg">
-                    Rechercher
-                </button>
-            </form>
         </div>
 
 
@@ -338,49 +340,96 @@ $resultMesReservation = $conn->query($sqlMesReservation);
 
                     <!-- Table Body -->
                     <tbody class="divide-y divide-gray-200">
-                        <?php while ($row = $resultAnimal->fetch_assoc()) { ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomAnimal"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["espèce"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["alimentation"] ?></td>
-                                <td class="px-6 py-4 w-25">
-                                    <img src="<?= $row["image"] ?>"
-                                        alt="<?= $row["nomAnimal"] ?>"
-                                        class="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm">
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["paysorigine"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["descriptioncourte"] ?></td>
-                                <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
+                        <?php if ($resultAnimalFiltre->num_rows > 0) {
+                            while ($row = $resultAnimalFiltre->fetch_assoc()) { ?>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomAnimal"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["espèce"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["alimentation"] ?></td>
+                                    <td class="px-6 py-4 w-25">
+                                        <img src="<?= $row["image"] ?>"
+                                            alt="<?= $row["nomAnimal"] ?>"
+                                            class="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm">
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["paysorigine"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["descriptioncourte"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
 
-                                <td class="flex gap-3 px-6 py-4 text-center">
-                                    <form action="../controller/deleteAnimal.php" method="POST"
-                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet Animal ?');">
-                                        <input type="hidden" name="id" value="<?= $row["id"] ?>">
-                                        <button
-                                            type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
-                                            Supprimer
+                                    <td class="flex gap-3 px-6 py-4 text-center">
+                                        <form action="../controller/deleteAnimal.php" method="POST"
+                                            onsubmit="return confirm('Voulez-vous vraiment supprimer cet Animal ?');">
+                                            <input type="hidden" name="id" value="<?= $row["id"] ?>">
+                                            <button
+                                                type="submit"
+                                                class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                                Supprimer
+                                            </button>
+                                        </form>
+
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+                                            type="button"
+                                            onclick="openModalAnimalModify(this)"
+                                            data-id="<?= $row['id'] ?>"
+                                            data-nom-animal="<?= $row['nomAnimal'] ?>"
+                                            data-espece="<?= $row['espèce'] ?>"
+                                            data-alimentation="<?= $row['alimentation'] ?>"
+                                            data-image="<?= $row['image'] ?>"
+                                            data-paysorigine="<?= $row['paysorigine'] ?>"
+                                            data-descriptioncourte="<?= $row['descriptioncourte'] ?>"
+                                            data-id-habitat="<?= $row['id_habitat'] ?>">
+                                            Modifier
                                         </button>
-                                    </form>
 
-                                    <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
-                                        type="button"
-                                        onclick="openModalAnimalModify(this)"
-                                        data-id="<?= $row['id'] ?>"
-                                        data-nom-animal="<?= $row['nomAnimal'] ?>"
-                                        data-espece="<?= $row['espèce'] ?>"
-                                        data-alimentation="<?= $row['alimentation'] ?>"
-                                        data-image="<?= $row['image'] ?>"
-                                        data-paysorigine="<?= $row['paysorigine'] ?>"
-                                        data-descriptioncourte="<?= $row['descriptioncourte'] ?>"
-                                        data-id-habitat="<?= $row['id_habitat'] ?>">
-                                        Modifier
-                                    </button>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            <?php } else {
+                            while ($row = $resultAnimal->fetch_assoc()) { ?>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["id"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomAnimal"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["espèce"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["alimentation"] ?></td>
+                                    <td class="px-6 py-4 w-25">
+                                        <img src="<?= $row["image"] ?>"
+                                            alt="<?= $row["nomAnimal"] ?>"
+                                            class="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm">
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["paysorigine"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["descriptioncourte"] ?></td>
+                                    <td class="px-6 py-4 text-sm text-gray-700"><?= $row["nomHabitat"] ?></td>
 
-                                </td>
-                            </tr>
+                                    <td class="flex gap-3 px-6 py-4 text-center">
+                                        <form action="../controller/deleteAnimal.php" method="POST"
+                                            onsubmit="return confirm('Voulez-vous vraiment supprimer cet Animal ?');">
+                                            <input type="hidden" name="id" value="<?= $row["id"] ?>">
+                                            <button
+                                                type="submit"
+                                                class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                                                Supprimer
+                                            </button>
+                                        </form>
+
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+                                            type="button"
+                                            onclick="openModalAnimalModify(this)"
+                                            data-id="<?= $row['id'] ?>"
+                                            data-nom-animal="<?= $row['nomAnimal'] ?>"
+                                            data-espece="<?= $row['espèce'] ?>"
+                                            data-alimentation="<?= $row['alimentation'] ?>"
+                                            data-image="<?= $row['image'] ?>"
+                                            data-paysorigine="<?= $row['paysorigine'] ?>"
+                                            data-descriptioncourte="<?= $row['descriptioncourte'] ?>"
+                                            data-id-habitat="<?= $row['id_habitat'] ?>">
+                                            Modifier
+                                        </button>
+
+                                    </td>
+                                </tr>
+                            <?php } ?>
                         <?php } ?>
+
                     </tbody>
                 </table>
             </div>
